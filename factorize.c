@@ -13,27 +13,27 @@ bool factorize_number(uint64_t n, uint64_t *p, uint64_t *q)
 {
 	uint64_t i;
 
-	/* Handle even numbers directly */
-	if (n % 2 == 0)
-	{
-		*p = 2;
-		*q = n / 2;
-		return (true);
-	}
+    /* Handle even numbers directly */
+    if (n % 2 == 0)
+    {
+        *p = n / 2;
+        *q = 2;
+        return (true);
+    }
 
-	/* Iterate through odd numbers to find factors */
-	for (i = 3; i * i <= n; i += 2)
-	{
-		if (n % i == 0)
-		{
-			*p = i;
-			*q = n / i;
-			return (true);
-		}
-	}
+    /* Iterate through odd numbers to find factors */
+    for (i = 3; i * i <= n; i += 2)
+    {
+        if (n % i == 0)
+        {
+            *p = n / i;
+            *q = i;
+            return (true);
+        }
+    }
 
-	/* If no factors found, return false */
-	return (false);
+    /* If no factors found, return false */
+    return (false);
 }
 
 /**
