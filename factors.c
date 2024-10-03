@@ -1,26 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-void factorize(long long n);
+#include <errno.h>
 
 /**
- * factorize - Find and print the smallest factor of a number
+ * factorize - Find and print the factors of a number
  * @n: The number to factorize
  */
-void factorize(long long n)
+void factorize(unsigned long long n)
 {
-	long long i;
+	unsigned long long i;
 
 	for (i = 2; i <= sqrt(n); i++)
 	{
 		if (n % i == 0)
 		{
-			printf("%lld=%lld*%lld\n", n, n / i, i);
+			printf("%llu=%llu*%llu\n", n, n / i, i);
 			return;
 		}
 	}
-	printf("%lld=%lld*1\n", n, n);
+	printf("%llu=%llu*1\n", n, n);
+}
+
+/**
+ * kstrtoull - Convert a string to an unsigned long long
+ * @s: The string to convert
+ * @base: The base of the number in the string
+ * @res: Pointer to the result variable
+ *
+ * Return: 0 on success, -EINVAL or -ERANGE on failure
+ */
+int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
+{
+	char *endp;
+	unsigned long long val;
+
+	if (s == NULL || *s == '\0')
+		return (-EINVAL);
+
+	errno = 0;
+	val = strtoull(s, &endp, base);
+
+	if (*endp != '\0')
+		return (-EINVAL);
+
+	if (errno == ERANGE)
+		return (-ERANGE);
+
+	*res = val;
+	return (0);
 }
 
 /**
@@ -36,30 +64,28 @@ int main(int argc, char *argv[])
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
+	unsigned long long n;
 
 	if (argc != 2)
 	{
 		fprintf(stderr, "Usage: %s <file>\n", argv[0]);
-		exit(1);
+		return (1);
 	}
 
 	file = fopen(argv[1], "r");
 	if (file == NULL)
 	{
 		perror("Error opening file");
-		exit(1);
+		return (1);
 	}
 
 	while ((read = getline(&line, &len, file)) != -1)
 	{
-		long long n = atoll(line);
-
-		factorize(n);
+		if (kstrtoull(line, 10, &n) == 0)
+			factorize(n);
 	}
 
 	fclose(file);
-	if (line)
-		free(line);
-
+	free(line);
 	return (0);
 }
