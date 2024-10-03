@@ -1,4 +1,5 @@
 #include "factor.h"
+#include <inttypes.h>
 
 /**
  * factorize_number - Attempt to factorize a number into two smaller numbers
@@ -55,9 +56,9 @@ void factorize_file(const char *filename)
 			continue;
 
 		if (factorize_number(n, &p, &q))
-			printf("%llu=%llu*%llu\n", n, p, q);
+			printf("%" PRIu64 "=%" PRIu64 "*%" PRIu64 "\n", n, p, q);
 		else
-			printf("%llu is prime\n", n);
+			printf("%" PRIu64 " is prime\n", n);
 	}
 
 	fclose(file);
