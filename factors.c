@@ -4,67 +4,41 @@
 #include <errno.h>
 
 /**
- * factorize - Find and print the factors of a number
- * @n: The number to factorize
+ * factorize - Factorizes a given number into a product of two factors
+ * @number: The number to be factorized
+ *
+ * This function finds the first two factors of the given number and prints
+ * them in the format: n=p*q.
  */
-void factorize(unsigned long long n)
+void factorize(long long number)
 {
-	unsigned long long i;
+	long long p, q;
 
-	for (i = 2; i <= sqrt(n); i++)
+	for (p = 2; p * p <= number; p++)
 	{
-		if (n % i == 0)
+		if (number % p == 0)
 		{
-			printf("%llu=%llu*%llu\n", n, n / i, i);
+			q = number / p;
+			printf("%lld=%lld*%lld\n", number, q, p);
 			return;
 		}
 	}
-	printf("%llu=%llu*1\n", n, n);
-}
-
-/**
- * kstrtoull - Convert a string to an unsigned long long
- * @s: The string to convert
- * @base: The base of the number in the string
- * @res: Pointer to the result variable
- *
- * Return: 0 on success, -EINVAL or -ERANGE on failure
- */
-int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
-{
-	char *endp;
-	unsigned long long val;
-
-	if (s == NULL || *s == '\0')
-		return (-EINVAL);
-
-	errno = 0;
-	val = strtoull(s, &endp, base);
-
-	if (*endp != '\0')
-		return (-EINVAL);
-
-	if (errno == ERANGE)
-		return (-ERANGE);
-
-	*res = val;
-	return (0);
+	printf("%lld=%lld*1\n", number, number);
 }
 
 /**
  * main - Entry point of the program
- * @argc: Number of command-line arguments
- * @argv: Array of command-line argument strings
+ * @argc: Argument count
+ * @argv: Argument vector (file name)
  *
- * Return: 0 on success, 1 on failure
+ * This program reads numbers from a file and factorizes each of them.
+ * The results are printed in the format n=p*q.
+ * Return: 0 on success, 1 on failure.
  */
 int main(int argc, char *argv[])
 {
 	FILE *file;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	unsigned long long n;
+	long long number;
 
 	if (argc != 2)
 	{
@@ -73,19 +47,17 @@ int main(int argc, char *argv[])
 	}
 
 	file = fopen(argv[1], "r");
-	if (file == NULL)
+	if (!file)
 	{
 		perror("Error opening file");
 		return (1);
 	}
 
-	while ((read = getline(&line, &len, file)) != -1)
+	while (fscanf(file, "%lld", &number) == 1)
 	{
-		if (kstrtoull(line, 10, &n) == 0)
-			factorize(n);
+		factorize(number);
 	}
 
 	fclose(file);
-	free(line);
 	return (0);
 }
