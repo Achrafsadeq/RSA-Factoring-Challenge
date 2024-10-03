@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+void factorize(long long n);
+
 /**
  * factorize - Find and print the smallest factor of a number
  * @n: The number to factorize
