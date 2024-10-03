@@ -13,6 +13,7 @@ bool factorize_number(uint64_t n, uint64_t *p, uint64_t *q)
 {
 	uint64_t i;
 
+	/* Handle even numbers directly */
 	if (n % 2 == 0)
 	{
 		*p = 2;
@@ -20,6 +21,7 @@ bool factorize_number(uint64_t n, uint64_t *p, uint64_t *q)
 		return (true);
 	}
 
+	/* Iterate through odd numbers to find factors */
 	for (i = 3; i * i <= n; i += 2)
 	{
 		if (n % i == 0)
@@ -30,6 +32,7 @@ bool factorize_number(uint64_t n, uint64_t *p, uint64_t *q)
 		}
 	}
 
+	/* If no factors found, return false */
 	return (false);
 }
 
@@ -49,12 +52,16 @@ void factorize_file(const char *filename)
 		exit(1);
 	}
 
+	/* Read each line, convert it to a number, and factorize */
 	while (fgets(line, sizeof(line), file))
 	{
 		n = strtoull(line, NULL, 10);
+
+		/* Skip numbers less than or equal to 1 */
 		if (n <= 1)
 			continue;
 
+		/* Factorize and print results */
 		if (factorize_number(n, &p, &q))
 			printf("%" PRIu64 "=%" PRIu64 "*%" PRIu64 "\n", n, p, q);
 		else
