@@ -1,45 +1,49 @@
-#!/usr/bin/env python3
-import sys
-import random
+#!/usr/bin/env bash
+# is a factors challenge
 
-def gcd(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
+check_factor()
+{
+	if [ $# -ne 3 ];
+        then
+                args=("$@")
+                count=0
+                num2=1
+                for a in ${args[*]};
+                do
+                        if [ $count -gt 1 ];
+                        then
+                                num2=$(echo $a*$num2 | bc)
+                        fi
+                        count=$((count + 1))
+                done
+        else
+                num2=$3
+        fi
 
-def pollards_rho(n):
-    if n % 2 == 0:
-        return 2
-    x = random.randint(2, n - 1)
-    y = x
-    c = random.randint(1, n - 1)
-    d = 1
-    while d == 1:
-        x = (x * x + c) % n
-        y = (y * y + c) % n
-        y = (y * y + c) % n
-        d = gcd(abs(x - y), n)
-        if d == n:
-            return pollards_rho(n)
-    return d
+        num1=$2
+        num=$(echo "$1" | tr ':' '=')
 
-def factorize(n):
-    if n % 2 == 0:
-        return n // 2, 2
-    if n == 3:
-        return 3, 1
-    factor = pollards_rho(n)
-    return n // factor, factor
+        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
+	        if ((result == 1)); then
+		        numcp=$num1
+		        num1=$num2
+		        num2=$numcp
+                fi
 
-def main(filename):
-    with open(filename, 'r') as file:
-        for line in file:
-            number = int(line.strip())
-            p, q = factorize(number)
-            print(f"{number}={p}*{q}")
+        echo "$num$num1*$num2"
+}
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        sys.exit(1)
-    main(sys.argv[1])
+if [ $# -ne 1 ]
+then
+        echo 'Usage: factors <file>'
+        exit 1
+else
+
+        while read i
+        do
+
+                result=$(factor "$i")
+                check_factor $result
+
+        done < "$1"
+fi
