@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+""" Number Factorization Tool """
+from sys import argv
+from math import sqrt
+
+
+def load_numbers_from_file(file_path):
+    """Read numbers from file and return as a list"""
+    with open(file_path, "r", encoding="utf-8") as input_file:
+        content = input_file.readlines()
+    numbers_to_factorize = []
+    for line in content:
+        numbers_to_factorize.append(int(line))
+    return numbers_to_factorize
+
+
+def find_factors(target):
+    """Find and print factors for a given number"""
+    for potential_factor in range(1, target):
+        if target == ((target // potential_factor) * potential_factor):
+            print("{}={}*{}".format(target, (target // potential_factor), potential_factor))
+            break
+
+
+def process_number_list(number_list):
+    """Process and factorize each number in the list"""
+    for number in number_list:
+        find_factors(number)
+
+
+if len(argv) == 2:
+    process_number_list(load_numbers_from_file(argv[1]))
