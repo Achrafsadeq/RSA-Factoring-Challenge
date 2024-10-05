@@ -1,32 +1,45 @@
 #!/usr/bin/env python3
-""" Number Factorization Tool """
-from sys import argv
+import sys
+import random
 
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
 
-def load_numbers_from_file(file_path):
-    """Read numbers from file and return as a list"""
-    with open(file_path, "r", encoding="utf-8") as input_file:
-        content = input_file.readlines()
-    numbers_to_factorize = []
-    for line in content:
-        numbers_to_factorize.append(int(line))
-    return numbers_to_factorize
+def pollards_rho(n):
+    if n % 2 == 0:
+        return 2
+    x = random.randint(2, n - 1)
+    y = x
+    c = random.randint(1, n - 1)
+    d = 1
+    while d == 1:
+        x = (x * x + c) % n
+        y = (y * y + c) % n
+        y = (y * y + c) % n
+        d = gcd(abs(x - y), n)
+        if d == n:
+            return pollards_rho(n)
+    return d
 
+def factorize(n):
+    if n % 2 == 0:
+        return n // 2, 2
+    if n == 3:
+        return 3, 1
+    factor = pollards_rho(n)
+    return n // factor, factor
 
-def find_factors(target):
-    """Find and print factors for a given number"""
-    for potential_factor in range(1, target):
-        if target % potential_factor == 0:
-            larger_factor = target // potential_factor
-            print("{}={}{}".format(target, larger_factor, potential_factor))
-            break
+def main(filename):
+    with open(filename, 'r') as file:
+        for line in file:
+            number = int(line.strip())
+            p, q = factorize(number)
+            print(f"{number}={p}*{q}")
 
-
-def process_number_list(number_list):
-    """Process and factorize each number in the list"""
-    for number in number_list:
-        find_factors(number)
-
-
-if len(argv) == 2:
-    process_number_list(load_numbers_from_file(argv[1]))
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        sys.exit(1)
+    main(sys.argv[1])
