@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+""" Integer Factorization Utility """
+from sys import argv
+from math import sqrt
+
+
+def extract_numbers_from_file(file_path):
+    """Parse file content and extract numbers as a list of integers"""
+    with open(file_path, "r", encoding="utf-8") as input_file:
+        content = input_file.readlines()
+    return [int(line) for line in content]
+
+
+def calculate_factors(n):
+    """Compute and display factors for a given integer"""
+    for potential_divisor in range(1, n):
+        if n == ((n // potential_divisor) * potential_divisor):
+            print("{}={}*{}".format(n, (n // potential_divisor), potential_divisor))
+            break
+
+
+def factorize_number_sequence(sequence):
+    """Iterate through a sequence of numbers and factorize each"""
+    for num in sequence:
+        calculate_factors(num)
+
+
+if len(argv) == 2:
+    factorize_number_sequence(extract_numbers_from_file(argv[1]))
