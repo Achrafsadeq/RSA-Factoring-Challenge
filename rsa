@@ -1,0 +1,60 @@
+import math
+import sys
+import os
+
+# Function to check if a number is prime
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+# Function to factorize n into p * q
+def factorize(n):
+    for p in range(2, int(math.isqrt(n)) + 1):
+        if n % p == 0:
+            q = n // p
+            if is_prime(p) and is_prime(q):
+                print(f"{n}={p}*{q}")
+                return
+    print(f"No prime factors found for {n}")
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python rsa.py <file or number>")
+        sys.exit(1)
+
+    input_value = sys.argv[1]
+
+    # Check if the input is a file
+    if os.path.isfile(input_value):
+        try:
+            with open(input_value, "r") as file:
+                n = int(file.readline().strip())
+        except FileNotFoundError:
+            print(f"Error: file '{input_value}' not found")
+            sys.exit(1)
+        except ValueError:
+            print(f"Error: invalid number format in file '{input_value}'")
+            sys.exit(1)
+    else:
+        # Try to parse the input as a number directly
+        try:
+            n = int(input_value)
+        except ValueError:
+            print(f"Error: '{input_value}' is not a valid number")
+            sys.exit(1)
+
+    # Factorize the number
+    factorize(n)
+
+if __name__ == "__main__":
+    main()
