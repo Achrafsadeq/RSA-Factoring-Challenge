@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+""" Number Factorization Tool """
+from sys import argv
+from math import isqrt
+
+def load_numbers_from_file(file_path):
+    """Read numbers from file and return as a list"""
+    with open(file_path, "r", encoding="utf-8") as input_file:
+        return [int(line.strip()) for line in input_file]
+
+def find_factors(n):
+    """Find and print factors for a given number using trial division"""
+    for i in range(2, isqrt(n) + 1):
+        if n % i == 0:
+            print(f"{n}={n//i}*{i}")
+            return
+    print(f"{n}={n}*1")
+
+def process_number_list(number_list):
+    """Process and factorize each number in the list"""
+    for number in number_list:
+        find_factors(number)
+
+if __name__ == "__main__":
+    if len(argv) == 2:
+        process_number_list(load_numbers_from_file(argv[1]))
