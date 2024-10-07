@@ -1,0 +1,69 @@
+#!/usr/bin/python3
+import sys
+import time
+from math import isqrt
+
+def pollard_rho(n):
+    if n % 2 == 0:
+        return 2
+    
+    x = 2
+    y = 2
+    d = 1
+    f = lambda x: (x**2 + 1) % n
+    
+    while d == 1:
+        x = f(x)
+        y = f(f(y))
+        d = gcd(abs(x - y), n)
+    
+    if d == n:
+        return None
+    return d
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def factorize(n):
+    if n <= 3:
+        return n, 1
+
+    factor = pollard_rho(n)
+    if factor:
+        return factor, n // factor
+
+    # If Pollard's rho fails, fall back to trial division
+    for i in range(2, isqrt(n) + 1):
+        if n % i == 0:
+            return i, n // i
+
+    return None
+
+def main(filename):
+    start_time = time.time()
+    
+    try:
+        with open(filename, 'r') as file:
+            n = int(file.readline().strip())
+    except (IOError, ValueError):
+        print(f"Error: Unable to read or parse the file {filename}")
+        return
+
+    factors = factorize(n)
+    
+    if factors:
+        p, q = factors
+        print(f"{n}={p}*{q}")
+    else:
+        print(f"Unable to factor {n} within the time limit")
+
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time:.6f} seconds")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: ./rsa <filename>")
+    else:
+        main(sys.argv[1])
