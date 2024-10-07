@@ -1,9 +1,13 @@
 #!/usr/bin/python3
+"""
+RSA Factoring Challenge - Optimized version
+"""
 import sys
 import time
-from math import isqrt
+from math import gcd, isqrt
 
-def pollard_rho(n):
+def pollards_rho(n):
+    """Pollard's Rho algorithm for factorization"""
     if n % 2 == 0:
         return 2
     
@@ -21,49 +25,51 @@ def pollard_rho(n):
         return None
     return d
 
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
-
-def factorize(n):
-    if n <= 3:
-        return n, 1
-
-    factor = pollard_rho(n)
+def find_prime_factors(n):
+    """Find two prime factors of n using multiple methods"""
+    # Try small primes first
+    small_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+    for p in small_primes:
+        if n % p == 0:
+            return p, n // p
+    
+    # Use Pollard's Rho algorithm
+    factor = pollards_rho(n)
     if factor:
         return factor, n // factor
-
-    # If Pollard's rho fails, fall back to trial division
-    for i in range(2, isqrt(n) + 1):
+    
+    # Fallback to trial division if Pollard's Rho fails
+    limit = isqrt(n)
+    for i in range(41, limit + 1, 2):
         if n % i == 0:
             return i, n // i
-
+    
     return None
 
-def main(filename):
-    start_time = time.time()
-    
+def factorize_rsa(file_path):
+    """Factorize the number in the given file"""
     try:
-        with open(filename, 'r') as file:
-            n = int(file.readline().strip())
+        with open(file_path, 'r') as file:
+            n = int(file.read().strip())
     except (IOError, ValueError):
-        print(f"Error: Unable to read or parse the file {filename}")
+        print(f"Error: Unable to read or parse the file {file_path}")
         return
 
-    factors = factorize(n)
-    
+    start_time = time.time()
+    factors = find_prime_factors(n)
+    end_time = time.time()
+
     if factors:
         p, q = factors
         print(f"{n}={p}*{q}")
     else:
-        print(f"Unable to factor {n} within the time limit")
-
-    end_time = time.time()
+        print(f"Unable to factorize {n} within the time limit.")
+    
     print(f"Time taken: {end_time - start_time:.6f} seconds")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: ./rsa <filename>")
-    else:
-        main(sys.argv[1])
+        print(f"Usage: {sys.argv[0]} <file>")
+        sys.exit(1)
+    
+    factorize_rsa(sys.argv[1])
